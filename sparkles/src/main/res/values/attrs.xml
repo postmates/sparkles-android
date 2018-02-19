@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="pm_sparkles_DefaultSparkLinesView" format="reference" />
+
+    <declare-styleable name="pm_sparkles_SparkLinesView">
+
+        <attr name="pm_sparkles_lineColor" format="color|reference" />
+        <attr name="pm_sparkles_lineWidth" format="dimension|reference" />
+
+        <attr name="pm_sparkles_baseLineColor" format="color|reference" />
+        <attr name="pm_sparkles_baseLineWidth" format="dimension|reference" />
+
+        <attr name="pm_sparkles_shouldFill" format="boolean|reference" />
+        <attr name="pm_sparkles_fillOpacityPercent" format="integer|reference" />
+
+        <attr name="pm_sparkles_animationType" format="enum">
+            <!-- Make sure that the values match SparklesLineView.AnimationType -->
+            <enum name="none" value="0" />
+            <enum name="line_path" value="1" />
+            <enum name="translate_up" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

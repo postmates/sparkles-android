@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="pm_sparkles_default_line_color">#00B386</color>
+    <color name="pm_sparkles_default_baseline_color">#77FFFFFF</color>
+
+    <dimen name="pm_sparkles_default_line_width">2dp</dimen>
+    <dimen name="pm_sparkles_default_baseline_width">1dp</dimen>
+
+    <integer name="pm_sparkles_default_fill_opacity_percent">30</integer>
+</resources>

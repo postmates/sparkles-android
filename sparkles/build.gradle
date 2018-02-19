@@ -11,7 +11,6 @@ android {
         targetSdkVersion rootProject.targetSdk
         versionCode "${appVersionCode}" as int
         versionName "${appVersionName}"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -20,14 +19,18 @@ android {
     }
 
     buildTypes {
-        debug {
-        }
         release {
+            debuggable false
             minifyEnabled false
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
     flavorDimensions "default"
+    resourcePrefix 'pm_sparkles_'
 }
 
 dependencies {

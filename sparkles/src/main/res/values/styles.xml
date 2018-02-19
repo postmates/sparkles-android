@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="pm_sparkles_DefaultSparkLinesViewStyle">
+        <item name="pm_sparkles_lineColor">@color/pm_sparkles_default_line_color</item>
+        <item name="pm_sparkles_lineWidth">@dimen/pm_sparkles_default_line_width</item>
+
+        <item name="pm_sparkles_baseLineColor">@color/pm_sparkles_default_baseline_color</item>
+        <item name="pm_sparkles_baseLineWidth">@dimen/pm_sparkles_default_baseline_width</item>
+
+        <item name="pm_sparkles_shouldFill">true</item>
+        <item name="pm_sparkles_fillOpacityPercent">@integer/pm_sparkles_default_fill_opacity_percent</item>
+
+        <item name="pm_sparkles_animationType">none</item>
+    </style>
+</resources>
