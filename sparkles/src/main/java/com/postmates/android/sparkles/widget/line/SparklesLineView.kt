@@ -8,6 +8,7 @@ import android.graphics.*
 import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
 import android.support.annotation.IntegerRes
+import android.support.annotation.NonNull
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -17,7 +18,6 @@ import com.postmates.android.sparkles.helpers.Constants
 import com.postmates.android.sparkles.model.AnimationType
 import com.postmates.android.sparkles.model.PathDataHolder
 import com.postmates.android.sparkles.widget.SparklesAdapter
-import java.util.*
 
 /**
  * A line graph with no axis and an optional base line represented by user input
@@ -31,18 +31,7 @@ class SparklesLineView @JvmOverloads constructor(
         defStyleRes: Int = R.style.pm_sparkles_DefaultSparkLinesViewStyle) :
         View(context, attrs, defStyleAttr, defStyleRes), SparklesAdapter.OnDataChangedListener {
 
-    // For determining the styles
-    @ColorInt private var lineColor: Int = 0
-    @ColorInt private var baseLineColor: Int = 0
-    @Dimension private var lineWidth: Float = 0.toFloat()
-    @Dimension private var baseLineWidth: Float = 0.toFloat()
-    @IntegerRes private var fillOpacityPercent: Int = 0
-
-    private var animationType = AnimationType.NONE
-    private var shouldAnimate: Boolean = false
-    private var shouldFill: Boolean = false
-
-    // For drawing the lines on canvas
+    // For drawing the lines & shapes on canvas
     private val contentRect = RectF()
     private val solidLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val dottedLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -59,9 +48,68 @@ class SparklesLineView @JvmOverloads constructor(
     // Helpers
     private var lineGraphScale: LineGraphScale? = null
 
-    /**
-     * Sets the backing [SparklesAdapter] to generate the points to be graphed
-     */
+    @ColorInt var lineColor: Int = 0
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    @ColorInt var baseLineColor: Int = 0
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    @Dimension var lineWidth: Float = 0f
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    @Dimension var baseLineWidth: Float = 0f
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    @IntegerRes var fillOpacityPercent: Int = 0
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    var animationType: AnimationType = AnimationType.NONE
+        set(value) {
+            value.let {
+                field = value
+                setValues()
+                invalidate()
+            }
+        }
+
+    var shouldFill: Boolean = false
+        set(value) {
+            value.let {
+                field = value
+                makeGraph()
+            }
+        }
+
     var adapter: SparklesAdapter? = null
         set(value) {
             value?.let {
@@ -70,8 +118,11 @@ class SparklesLineView @JvmOverloads constructor(
                 makeGraph()
             }
         }
+
     private val graphBottom: Float
-        get() = height.toFloat() - paddingBottom
+        get() {
+            return height.toFloat().minus(paddingBottom)
+        }
 
     init {
         attrs?.let {
@@ -82,7 +133,7 @@ class SparklesLineView @JvmOverloads constructor(
                     initValues(a)
                 }
             } catch (ex: Exception) {
-                Log.e(TAG, "Problem Initializing Styleable\n ", ex)
+                Log.e(Constants.LIB_TAG, "Problem Initializing Styleable\n ", ex)
             } finally {
                 a?.recycle()
             }
@@ -106,7 +157,6 @@ class SparklesLineView @JvmOverloads constructor(
 
         val declaredAnim = a.getInt(R.styleable.pm_sparkles_SparkLinesView_pm_sparkles_animationType, 0)
         animationType = AnimationType.values()[declaredAnim]
-        shouldAnimate = animationType !== AnimationType.NONE
     }
 
     private fun setValues() {
@@ -125,18 +175,13 @@ class SparklesLineView @JvmOverloads constructor(
         fillPaint.color = lineColor
         fillPaint.alpha = fillOpacityPercent.times(255).div(100)
 
-        setShouldFill(shouldFill)
-
-        if (shouldAnimate) {
+        if (shouldAnimate()) {
             animationSet = AnimatorSet()
         }
     }
 
-    private fun setStrokeStyle(paint: Paint,
-                               @ColorInt color: Int,
-                               @Dimension width: Float,
-                               pathEffect: PathEffect?) {
-
+    private fun setStrokeStyle(@NonNull paint: Paint, @ColorInt color: Int,
+                               @Dimension width: Float, @NonNull pathEffect: PathEffect?) {
         paint.style = Paint.Style.STROKE
         paint.color = color
         paint.strokeWidth = width
@@ -145,20 +190,14 @@ class SparklesLineView @JvmOverloads constructor(
         paint.pathEffect = pathEffect
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldW: Int, oldH: Int) {
-        super.onSizeChanged(w, h, oldW, oldH)
-        calculateViewPort()
-        makeGraph()
-    }
-
     private fun makeGraph() {
         if (width == 0 || height == 0) {
-            Log.e(TAG, "Invalid value for adapter or measurement")
+            Log.e(Constants.LIB_TAG, "Invalid value for adapter or measurement")
             return
         }
 
         if (this.adapter == null || this.adapter!!.count < 2) {
-            Log.e(TAG, "Invalid adapter values")
+            Log.e(Constants.LIB_TAG, "Invalid or Insufficient adapter values")
             resetData()
             return
         }
@@ -254,27 +293,26 @@ class SparklesLineView @JvmOverloads constructor(
 
     private fun performAnimations() {
 
-        if (!shouldAnimate || pathDataHolderList == null || animationSet == null) {
-            Log.i(TAG, "Skipping animation due to invalid input")
+        if (!shouldAnimate() || pathDataHolderList == null || animationSet == null) {
+            Log.i(Constants.LIB_TAG, "Skipping animation due to invalid input")
             return
         }
 
         if (animationSet!!.isRunning) {
             // Cancel any existing animations
-            Log.i(TAG, "Cancelling Existing Animation")
+            Log.i(Constants.LIB_TAG, "Cancelling Existing Animation")
             animationSet!!.cancel()
         }
 
         when (animationType) {
             AnimationType.LINE_PATH -> playLinePathAnimations()
             AnimationType.TRANSLATE_UP -> playTranslateUpAnimations()
-            AnimationType.NONE -> Log.i(TAG, "Animation type undefined")
-            else -> Log.i(TAG, "Animation type undefined")
+            AnimationType.NONE -> Log.i(Constants.LIB_TAG, "Animation type undefined")
         }
     }
 
     private fun playLinePathAnimations() {
-        Log.d(TAG, ">Building Line Path Animations")
+        Log.d(Constants.LIB_TAG, ">Building Line Path Animations")
         val animationsList = ArrayList<Animator>()
 
         if (baseLinePathHolder != null) {
@@ -306,12 +344,12 @@ class SparklesLineView @JvmOverloads constructor(
         }
 
         animationSet!!.playSequentially(animationsList)
-        Log.i(TAG, ">Starting Line Path Animation")
         animationSet!!.start()
+        Log.i(Constants.LIB_TAG, ">Playing Line Path Animation")
     }
 
     private fun playTranslateUpAnimations() {
-        Log.d(TAG, ">Building Translate Up Animations")
+        Log.d(Constants.LIB_TAG, ">Building Translate Up Animations")
 
         if (baseLinePathHolder != null) {
             val baseLineAnimator = AnimationHelper.getLinePathAnimator(this,
@@ -343,42 +381,8 @@ class SparklesLineView @JvmOverloads constructor(
 
         animationSet!!.startDelay = Constants.ANIM_DURATION_BASE_LINE_DRAW_MS
         animationSet!!.playTogether(animatorList)
-        Log.i(TAG, ">Starting Translate Up Animation")
         animationSet!!.start()
-    }
-
-    /**
-     * GETTERS & SETTERS
-     */
-    fun setLineColor(@ColorInt lineColor: Int) {
-        this.lineColor = lineColor
-        setValues()
-        invalidate()
-    }
-
-    fun setLineWidth(@Dimension lineWidth: Float) {
-        this.lineWidth = lineWidth
-        setValues()
-        invalidate()
-    }
-
-    fun setBaselineColor(@ColorInt baseLineColor: Int) {
-        this.baseLineColor = baseLineColor
-        setValues()
-        invalidate()
-    }
-
-    fun setBaselineWidth(@Dimension baseLineWidth: Float) {
-        this.baseLineWidth = baseLineWidth
-        setValues()
-        invalidate()
-    }
-
-    fun setShouldFill(fill: Boolean) {
-        if (this.shouldFill != fill) {
-            this.shouldFill = fill
-            makeGraph()
-        }
+        Log.i(Constants.LIB_TAG, ">Playing Translate Up Animation")
     }
 
     private fun resetData() {
@@ -389,9 +393,7 @@ class SparklesLineView @JvmOverloads constructor(
     }
 
     private fun resetPaths() {
-        if (pathDataHolderList != null) {
-            resetPathList()
-        }
+        resetPathList()
         resetHolderPath(fillPathHolder)
         resetHolderPath(baseLinePathHolder)
     }
@@ -407,16 +409,8 @@ class SparklesLineView @JvmOverloads constructor(
         holder?.path?.reset()
     }
 
-    /**
-     * This updates the original path with a partial path
-     * that is used for animations by the ValueAnimator
-     * @param originalPath - The original path as drawn on canvas
-     * @param currentPath - The partial path as computed by the ValueAnimator
-     */
-    fun updateAnimationPath(originalPath: Path, currentPath: Path) {
-        originalPath.reset()
-        originalPath.addPath(currentPath)
-        invalidate()
+    private fun shouldAnimate(): Boolean {
+        return animationType != AnimationType.NONE
     }
 
     /**
@@ -424,25 +418,36 @@ class SparklesLineView @JvmOverloads constructor(
      * rect minus any padding.
      */
     private fun calculateViewPort() {
-        contentRect?.set(paddingStart.toFloat(), paddingTop.toFloat(),
-                (width - paddingEnd).toFloat(),
-                graphBottom
-        )
+        contentRect.set(paddingStart.toFloat(), paddingTop.toFloat(),
+                (width.minus(paddingEnd)).toFloat(), graphBottom)
+    }
+
+    /**
+     * This updates the original path with a partial path
+     * that is used for animations by the ValueAnimator
+     * @param originalPath - The original path as drawn on canvas
+     * @param currentPath - The partial path as computed by the ValueAnimator
+     */
+    internal fun updateAnimationPath(originalPath: Path, currentPath: Path) {
+        originalPath.reset()
+        originalPath.addPath(currentPath)
+        invalidate()
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldW: Int, oldH: Int) {
+        super.onSizeChanged(w, h, oldW, oldH)
+        calculateViewPort()
+        makeGraph()
     }
 
     override fun onDataChanged() {
         makeGraph()
-        if (shouldAnimate) {
+        if (shouldAnimate()) {
             performAnimations()
         }
     }
 
     override fun onDataInvalidated() {
         resetData()
-    }
-
-    companion object {
-
-        private val TAG = SparklesLineView::class.java.simpleName
     }
 }
