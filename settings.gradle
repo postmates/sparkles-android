@@ -1,1 +1,1 @@
-include ':sample', ':sparkles'
+include ':sample-kotlin', ':sparkles', ':sample-java'

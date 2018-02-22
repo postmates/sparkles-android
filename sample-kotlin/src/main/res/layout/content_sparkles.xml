@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:sparkles="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.postmates.android.sparkles.app.SparklesActivity"
+    tools:showIn="@layout/app_bar_sparkles">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_dark"
+        android:padding="@dimen/default_margin">
+
+        <com.postmates.android.sparkles.widget.line.SparklesLineView
+            android:id="@+id/translateUpGraph"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/graph_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            sparkles:pm_sparkles_animationType="translate_up"
+            sparkles:pm_sparkles_lineColor="@color/graph_green"
+            sparkles:pm_sparkles_shouldFill="true" />
+
+        <TextView
+            android:id="@+id/labelTranslateUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:gravity="center_horizontal"
+            android:text="Translate Up Animation (with Fill)"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/translateUpGraph" />
+
+        <com.postmates.android.sparkles.widget.line.SparklesLineView
+            android:id="@+id/linePathGraph"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/graph_height"
+            android:layout_marginTop="@dimen/default_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelTranslateUp"
+            sparkles:pm_sparkles_animationType="line_path"
+            sparkles:pm_sparkles_lineColor="@color/graph_red"
+            sparkles:pm_sparkles_shouldFill="false" />
+
+        <TextView
+            android:id="@+id/labelLinePath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:gravity="center_horizontal"
+            android:text="Line Path Animation (without Fill)"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linePathGraph" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
