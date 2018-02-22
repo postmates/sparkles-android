@@ -13,7 +13,7 @@ dependencies {
 }
 ```
 
-### (TODO START - This can change based on where we host the artifact)
+(*TODO* START - This can change based on where we host the artifact)
 
 Add this in your root `build.gradle` file (and **not** your module `build.gradle` file):
 
@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-### (TODO END)
+(*TODO* END)
 
 
 ## Usage
@@ -127,8 +127,12 @@ Java:
         sparklesGraphView.setShouldFill(true | false);
 ```
 
+
+## GIF
+
+![Demo GIF](./docs/sparkles-sample.gif)
+
 ## Screenshots
 
-
-
-
+![Screenshot 1](./docs/sparkles-1.png)
+![Screenshot 2](./docs/sparkles-2.png)
