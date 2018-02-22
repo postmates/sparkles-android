@@ -50,64 +50,50 @@ class SparklesLineView @JvmOverloads constructor(
 
     @ColorInt var lineColor: Int = 0
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     @ColorInt var baseLineColor: Int = 0
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     @Dimension var lineWidth: Float = 0f
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     @Dimension var baseLineWidth: Float = 0f
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     @IntegerRes var fillOpacityPercent: Int = 0
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     var animationType: AnimationType = AnimationType.NONE
         set(value) {
-            value.let {
-                field = value
-                setValues()
-                invalidate()
-            }
+            field = value
+            setValues()
+            invalidate()
         }
 
     var shouldFill: Boolean = false
         set(value) {
-            value.let {
-                field = value
-                makeGraph()
-            }
+            field = value
+            makeGraph()
         }
 
     var adapter: SparklesAdapter? = null
