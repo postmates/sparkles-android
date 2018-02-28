@@ -3,7 +3,7 @@ package com.postmates.android.sparkles.widget
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.Log
-import com.postmates.android.sparkles.helpers.Constants
+import com.postmates.android.sparkles.helpers.Constants.LIB_TAG
 import com.postmates.android.sparkles.helpers.SparklesUtil
 import com.postmates.android.sparkles.model.SparklesDataPoint
 
@@ -69,7 +69,7 @@ class SparklesAdapter {
                 maxY = Math.max(maxY, y)
             }
 
-            Log.d(Constants.LIB_TAG, "Rect Dimens:\nminX: $minX, minY: $minY" +
+            Log.d(LIB_TAG, "Rect Dimens:\nminX: $minX, minY: $minY" +
                     "\nmaxX: $maxX, maxY: $maxY")
 
             return RectF(minX, minY.minus(VERTICAL_BOUND_OFFSET),
@@ -89,7 +89,7 @@ class SparklesAdapter {
                 .map { it.toFloat() }
                 .max() ?: -Float.MAX_VALUE
 
-        Log.d(Constants.LIB_TAG, "Final Max Value: $maxValue")
+        Log.d(LIB_TAG, "Final Max Value: $maxValue")
 
         // Compute the input points relative to the max value to plot on graph
         var lastGoodValue = 0f
@@ -99,7 +99,7 @@ class SparklesAdapter {
             if (!point.isEmptyValue) {
                 lastGoodValue = SparklesUtil.calculatePercent(point.inputValue!!.toFloat(), maxValue)
             }
-            Log.d(Constants.LIB_TAG, "Point at $i : $lastGoodValue" +
+            Log.d(LIB_TAG, "Point at $i : $lastGoodValue" +
                     ", isMissing: ${point.isEmptyValue}")
             point.graphValue = PointF(i.toFloat(), lastGoodValue)
         }
@@ -110,7 +110,7 @@ class SparklesAdapter {
             PointF(0f, SparklesUtil.calculatePercent(inputBaseline.toFloat(), maxValue))
         }
 
-        Log.d(Constants.LIB_TAG, "Calculated Graph Baseline: $graphBaseline")
+        Log.d(LIB_TAG, "Calculated Graph Baseline: $graphBaseline")
         notifyDataSetChanged()
     }
 

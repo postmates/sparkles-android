@@ -8,14 +8,15 @@ import android.graphics.*
 import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
 import android.support.annotation.IntegerRes
-import android.support.annotation.NonNull
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import com.postmates.android.sparkles.R
 import com.postmates.android.sparkles.helpers.AnimationHelper
 import com.postmates.android.sparkles.helpers.Constants
+import com.postmates.android.sparkles.helpers.Constants.LIB_TAG
 import com.postmates.android.sparkles.model.AnimationType
+import com.postmates.android.sparkles.model.AnimationType.*
 import com.postmates.android.sparkles.model.PathDataHolder
 import com.postmates.android.sparkles.widget.SparklesAdapter
 
@@ -83,7 +84,7 @@ class SparklesLineView @JvmOverloads constructor(
             invalidate()
         }
 
-    var animationType: AnimationType = AnimationType.NONE
+    var animationType: AnimationType = NONE
         set(value) {
             field = value
             setValues()
@@ -119,7 +120,7 @@ class SparklesLineView @JvmOverloads constructor(
                     initValues(a)
                 }
             } catch (ex: Exception) {
-                Log.e(Constants.LIB_TAG, "Problem Initializing Styleable\n ", ex)
+                Log.e(LIB_TAG, "Problem Initializing Styleable\n ", ex)
             } finally {
                 a?.recycle()
             }
@@ -166,8 +167,8 @@ class SparklesLineView @JvmOverloads constructor(
         }
     }
 
-    private fun setStrokeStyle(@NonNull paint: Paint, @ColorInt color: Int,
-                               @Dimension width: Float, @NonNull pathEffect: PathEffect?) {
+    private fun setStrokeStyle(paint: Paint, @ColorInt color: Int, 
+                               @Dimension width: Float, pathEffect: PathEffect?) {
         paint.style = Paint.Style.STROKE
         paint.color = color
         paint.strokeWidth = width
@@ -178,12 +179,12 @@ class SparklesLineView @JvmOverloads constructor(
 
     private fun makeGraph() {
         if (width == 0 || height == 0) {
-            Log.e(Constants.LIB_TAG, "Invalid value for adapter or measurement")
+            Log.e(LIB_TAG, "Invalid value for adapter or measurement")
             return
         }
 
         if (this.adapter == null || this.adapter!!.count < 2) {
-            Log.e(Constants.LIB_TAG, "Invalid or Insufficient adapter values")
+            Log.e(LIB_TAG, "Invalid or Insufficient adapter values")
             resetData()
             return
         }
@@ -280,25 +281,25 @@ class SparklesLineView @JvmOverloads constructor(
     private fun performAnimations() {
 
         if (!shouldAnimate() || pathDataHolderList == null || animationSet == null) {
-            Log.i(Constants.LIB_TAG, "Skipping animation due to invalid input")
+            Log.i(LIB_TAG, "Skipping animation due to invalid input")
             return
         }
 
         if (animationSet!!.isRunning) {
             // Cancel any existing animations
-            Log.i(Constants.LIB_TAG, "Cancelling Existing Animation")
+            Log.i(LIB_TAG, "Cancelling Existing Animation")
             animationSet!!.cancel()
         }
 
         when (animationType) {
-            AnimationType.LINE_PATH -> playLinePathAnimations()
-            AnimationType.TRANSLATE_UP -> playTranslateUpAnimations()
-            AnimationType.NONE -> Log.i(Constants.LIB_TAG, "Animation type undefined")
+            LINE_PATH -> playLinePathAnimations()
+            TRANSLATE_UP -> playTranslateUpAnimations()
+            NONE -> Log.i(LIB_TAG, "Animation type undefined")
         }
     }
 
     private fun playLinePathAnimations() {
-        Log.d(Constants.LIB_TAG, ">Building Line Path Animations")
+        Log.d(LIB_TAG, ">Building Line Path Animations")
         val animationsList = ArrayList<Animator>()
 
         if (baseLinePathHolder != null) {
@@ -331,11 +332,11 @@ class SparklesLineView @JvmOverloads constructor(
 
         animationSet!!.playSequentially(animationsList)
         animationSet!!.start()
-        Log.i(Constants.LIB_TAG, ">Playing Line Path Animation")
+        Log.i(LIB_TAG, ">Playing Line Path Animation")
     }
 
     private fun playTranslateUpAnimations() {
-        Log.d(Constants.LIB_TAG, ">Building Translate Up Animations")
+        Log.d(LIB_TAG, ">Building Translate Up Animations")
 
         if (baseLinePathHolder != null) {
             val baseLineAnimator = AnimationHelper.getLinePathAnimator(this,
@@ -368,7 +369,7 @@ class SparklesLineView @JvmOverloads constructor(
         animationSet!!.startDelay = Constants.ANIM_DURATION_BASE_LINE_DRAW_MS
         animationSet!!.playTogether(animatorList)
         animationSet!!.start()
-        Log.i(Constants.LIB_TAG, ">Playing Translate Up Animation")
+        Log.i(LIB_TAG, ">Playing Translate Up Animation")
     }
 
     private fun resetData() {
@@ -396,7 +397,7 @@ class SparklesLineView @JvmOverloads constructor(
     }
 
     private fun shouldAnimate(): Boolean {
-        return animationType != AnimationType.NONE
+        return animationType != NONE
     }
 
     /**

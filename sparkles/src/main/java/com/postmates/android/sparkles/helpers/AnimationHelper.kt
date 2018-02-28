@@ -5,6 +5,7 @@ import android.graphics.Matrix
 import android.graphics.Path
 import android.graphics.PathMeasure
 import android.util.Log
+import com.postmates.android.sparkles.helpers.Constants.LIB_TAG
 import com.postmates.android.sparkles.model.PathDataHolder
 import com.postmates.android.sparkles.widget.line.SparklesLineView
 
@@ -29,7 +30,7 @@ object AnimationHelper {
                                durationMs: Long): ValueAnimator? {
 
         if (!holder.hasValidPointInfo()) {
-            Log.w(Constants.LIB_TAG, "Input path start & end points information was invalid")
+            Log.w(LIB_TAG, "Input path start & end points information was invalid")
             return null
         }
 
