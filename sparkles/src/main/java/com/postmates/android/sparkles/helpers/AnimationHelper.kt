@@ -131,7 +131,5 @@ object AnimationHelper {
         }
     }
 
-    private fun getValueAnimator(): ValueAnimator {
-        return ValueAnimator.ofFloat(0f, 1f)
-    }
+    private fun getValueAnimator() = ValueAnimator.ofFloat(0f, 1f)
 }

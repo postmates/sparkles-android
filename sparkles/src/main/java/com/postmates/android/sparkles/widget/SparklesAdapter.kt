@@ -14,11 +14,6 @@ import com.postmates.android.sparkles.model.SparklesDataPoint
  */
 class SparklesAdapter {
 
-    companion object {
-        // Some extra top/bottom view space
-        private const val VERTICAL_BOUND_OFFSET = 10f
-    }
-
     // User Inputs
     private var inputDataPoints: List<SparklesDataPoint>? = null
     private var inputBaseline: SparklesDataPoint? = null
@@ -28,7 +23,7 @@ class SparklesAdapter {
 
     val count: Int
         get() {
-            return if (inputDataPoints == null) 0 else inputDataPoints!!.size
+            return inputDataPoints?.size ?: 0
         }
 
     /**
@@ -154,5 +149,10 @@ class SparklesAdapter {
     interface OnDataChangedListener {
         fun onDataChanged()
         fun onDataInvalidated()
+    }
+
+    companion object {
+        // Some extra top/bottom view space
+        private const val VERTICAL_BOUND_OFFSET = 10f
     }
 }

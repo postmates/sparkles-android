@@ -4,7 +4,13 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.DashPathEffect
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PathEffect
+import android.graphics.PointF
+import android.graphics.RectF
 import android.support.annotation.ColorInt
 import android.support.annotation.Dimension
 import android.support.annotation.IntegerRes
@@ -16,7 +22,9 @@ import com.postmates.android.sparkles.helpers.AnimationHelper
 import com.postmates.android.sparkles.helpers.Constants
 import com.postmates.android.sparkles.helpers.Constants.LIB_TAG
 import com.postmates.android.sparkles.model.AnimationType
-import com.postmates.android.sparkles.model.AnimationType.*
+import com.postmates.android.sparkles.model.AnimationType.LINE_PATH
+import com.postmates.android.sparkles.model.AnimationType.NONE
+import com.postmates.android.sparkles.model.AnimationType.TRANSLATE_UP
 import com.postmates.android.sparkles.model.PathDataHolder
 import com.postmates.android.sparkles.widget.SparklesAdapter
 
@@ -49,35 +57,40 @@ class SparklesLineView @JvmOverloads constructor(
     // Helpers
     private var lineGraphScale: LineGraphScale? = null
 
-    @ColorInt var lineColor: Int = 0
+    @ColorInt
+    var lineColor: Int = 0
         set(value) {
             field = value
             setValues()
             invalidate()
         }
 
-    @ColorInt var baseLineColor: Int = 0
+    @ColorInt
+    var baseLineColor: Int = 0
         set(value) {
             field = value
             setValues()
             invalidate()
         }
 
-    @Dimension var lineWidth: Float = 0f
+    @Dimension
+    var lineWidth: Float = 0f
         set(value) {
             field = value
             setValues()
             invalidate()
         }
 
-    @Dimension var baseLineWidth: Float = 0f
+    @Dimension
+    var baseLineWidth: Float = 0f
         set(value) {
             field = value
             setValues()
             invalidate()
         }
 
-    @IntegerRes var fillOpacityPercent: Int = 0
+    @IntegerRes
+    var fillOpacityPercent: Int = 0
         set(value) {
             field = value
             setValues()
@@ -101,7 +114,7 @@ class SparklesLineView @JvmOverloads constructor(
         set(value) {
             value?.let {
                 field = value
-                this.adapter!!.setListener(this)
+                it.setListener(this)
                 makeGraph()
             }
         }
@@ -158,32 +171,36 @@ class SparklesLineView @JvmOverloads constructor(
         setStrokeStyle(baseLinePaint, baseLineColor, baseLineWidth, null)
 
         // set the fill style
-        fillPaint.style = Paint.Style.FILL
-        fillPaint.color = lineColor
-        fillPaint.alpha = fillOpacityPercent.times(255).div(100)
+        fillPaint.apply {
+            style = Paint.Style.FILL
+            color = lineColor
+            alpha = fillOpacityPercent.times(255).div(100)
+        }
 
         if (shouldAnimate()) {
             animationSet = AnimatorSet()
         }
     }
 
-    private fun setStrokeStyle(paint: Paint, @ColorInt color: Int, 
-                               @Dimension width: Float, pathEffect: PathEffect?) {
-        paint.style = Paint.Style.STROKE
-        paint.color = color
-        paint.strokeWidth = width
-        paint.strokeCap = Paint.Cap.ROUND
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.pathEffect = pathEffect
+    private fun setStrokeStyle(paint: Paint, @ColorInt colorRes: Int,
+                               @Dimension width: Float, effect: PathEffect?) {
+        with (paint) {
+            style = Paint.Style.STROKE
+            color = colorRes
+            strokeWidth = width
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
+            pathEffect = effect
+        }
     }
 
     private fun makeGraph() {
-        if (width == 0 || height == 0) {
+        if (width == 0 || height == 0 || adapter == null) {
             Log.e(LIB_TAG, "Invalid value for adapter or measurement")
             return
         }
 
-        if (this.adapter == null || this.adapter!!.count < 2) {
+        if (adapter!!.count < 2) {
             Log.e(LIB_TAG, "Invalid or Insufficient adapter values")
             resetData()
             return
@@ -210,26 +227,32 @@ class SparklesLineView @JvmOverloads constructor(
 
         val fillPath = Path()
 
-        for (i in 0 until this.adapter!!.count) {
+        for (i in 0 until adapter!!.count) {
             currentX = lineGraphScale!!.getX(this.adapter!!.getGraphX(i))
             currentY = lineGraphScale!!.getY(this.adapter!!.getGraphY(i))
 
-            if (i == 0) {
-                prevX = currentX
-                prevY = currentY
-                fillPath.moveTo(currentX, currentY)
-            } else {
-                fillPath.lineTo(currentX, currentY)
+            when (i) {
+                0 -> {
+                    prevX = currentX
+                    prevY = currentY
+                    fillPath.moveTo(currentX, currentY)
+                }
+                else -> fillPath.lineTo(currentX, currentY)
             }
 
             val startPoint = PointF(prevX, prevY)
             val endPoint = PointF(currentX, currentY)
 
-            val path = Path()
-            path.moveTo(startPoint.x, startPoint.y)
-            path.lineTo(endPoint.x, endPoint.y)
+            val path = Path().apply {
+                moveTo(startPoint.x, startPoint.y)
+                lineTo(endPoint.x, endPoint.y)
+            }
 
-            val paintStyle = if (this.adapter!!.isEmptyValue(i)) dottedLinePaint else solidLinePaint
+            val paintStyle = when (adapter!!.isEmptyValue(i)) {
+                true -> dottedLinePaint
+                false -> solidLinePaint
+            }
+
             pathDataHolderList.add(PathDataHolder(path, paintStyle, startPoint, endPoint))
 
             prevX = currentX
@@ -273,8 +296,8 @@ class SparklesLineView @JvmOverloads constructor(
     }
 
     private fun drawPath(canvas: Canvas, holder: PathDataHolder?) {
-        if (holder != null) {
-            canvas.drawPath(holder.path, holder.paint)
+        holder?.let {
+            canvas.drawPath(it.path, it.paint)
         }
     }
 
@@ -285,10 +308,12 @@ class SparklesLineView @JvmOverloads constructor(
             return
         }
 
-        if (animationSet!!.isRunning) {
-            // Cancel any existing animations
-            Log.i(LIB_TAG, "Cancelling Existing Animation")
-            animationSet!!.cancel()
+        with (animationSet!!) {
+            if (isRunning) {
+                // Cancel any existing animations
+                Log.i(LIB_TAG, "Cancelling Existing Animation")
+                cancel()
+            }
         }
 
         when (animationType) {
@@ -302,73 +327,76 @@ class SparklesLineView @JvmOverloads constructor(
         Log.d(LIB_TAG, ">Building Line Path Animations")
         val animationsList = ArrayList<Animator>()
 
-        if (baseLinePathHolder != null) {
-            val baseLineAnimator = AnimationHelper.getLinePathAnimator(this,
-                    baseLinePathHolder!!.path, Constants.ANIM_DURATION_BASE_LINE_DRAW_MS)
-            if (baseLineAnimator != null) {
-                animationsList.add(baseLineAnimator)
+        baseLinePathHolder?.let {
+            AnimationHelper.getLinePathAnimator(this, it.path,
+                    Constants.ANIM_DURATION_BASE_LINE_DRAW_MS)?.apply {
+                animationsList.add(this)
             }
         }
 
         if (!pathDataHolderList.isEmpty()) {
             // Equally distribute the line animations so it adds to the total time required
             val perLineAnimDuration = Constants.ANIM_DURATION_LINE_DRAW_MS / pathDataHolderList.size
-            for ((path) in pathDataHolderList) {
-                val lineAnimator = AnimationHelper.getLinePathAnimator(this,
-                        path, perLineAnimDuration)
-                if (lineAnimator != null) {
-                    animationsList.add(lineAnimator)
+
+            pathDataHolderList.forEach {
+                AnimationHelper.getLinePathAnimator(this, it.path,
+                        perLineAnimDuration)?.apply {
+                    animationsList.add(this)
                 }
             }
         }
 
-        if (shouldFill && fillPathHolder != null) {
-            val fillAnimator = AnimationHelper.getLinePathAnimator(this,
-                    fillPathHolder!!.path, Constants.ANIM_DURATION_FILL_DRAW_MS)
-            if (fillAnimator != null) {
-                animationsList.add(fillAnimator)
+        if (shouldFill) {
+            fillPathHolder?.let {
+                AnimationHelper.getLinePathAnimator(this, it.path,
+                        Constants.ANIM_DURATION_FILL_DRAW_MS)?.apply {
+                    animationsList.add(this)
+                }
             }
         }
 
-        animationSet!!.playSequentially(animationsList)
-        animationSet!!.start()
+        with(animationSet!!) {
+            playSequentially(animationsList)
+            start()
+        }
+
         Log.i(LIB_TAG, ">Playing Line Path Animation")
     }
 
     private fun playTranslateUpAnimations() {
         Log.d(LIB_TAG, ">Building Translate Up Animations")
 
-        if (baseLinePathHolder != null) {
-            val baseLineAnimator = AnimationHelper.getLinePathAnimator(this,
-                    baseLinePathHolder!!.path, Constants.ANIM_DURATION_BASE_LINE_DRAW_MS)
-            baseLineAnimator?.start()
+        baseLinePathHolder?.let {
+            AnimationHelper.getLinePathAnimator(this, it.path,
+                    Constants.ANIM_DURATION_BASE_LINE_DRAW_MS)?.start()
         }
 
         val animatorList = ArrayList<Animator>()
 
         if (!pathDataHolderList.isEmpty()) {
-            // Equally distribute the line animations so it adds to the total time required
-            for (i in pathDataHolderList.indices) {
-                val holder = pathDataHolderList[i]
-                val lineAnimator = AnimationHelper.getTranslateUpAnimator(this,
-                        holder, graphBottom, Constants.ANIM_DURATION_LINE_DRAW_MS)
-                if (lineAnimator != null) {
-                    animatorList.add(lineAnimator)
+            pathDataHolderList.forEach {
+                AnimationHelper.getTranslateUpAnimator(this, it, graphBottom,
+                        Constants.ANIM_DURATION_LINE_DRAW_MS)?.apply {
+                    animatorList.add(this)
                 }
             }
         }
 
-        if (shouldFill && fillPathHolder != null) {
-            val fillAnimator = AnimationHelper.getFillTranslationAnimator(this,
-                    fillPathHolder!!.path, graphBottom, Constants.ANIM_DURATION_LINE_DRAW_MS)
-            if (fillAnimator != null) {
-                animatorList.add(fillAnimator)
+        if (shouldFill) {
+            fillPathHolder?.let {
+                AnimationHelper.getFillTranslationAnimator(this, it.path,
+                        graphBottom, Constants.ANIM_DURATION_LINE_DRAW_MS)?.apply {
+                    animatorList.add(this)
+                }
             }
         }
 
-        animationSet!!.startDelay = Constants.ANIM_DURATION_BASE_LINE_DRAW_MS
-        animationSet!!.playTogether(animatorList)
-        animationSet!!.start()
+        with(animationSet!!) {
+            startDelay = Constants.ANIM_DURATION_BASE_LINE_DRAW_MS
+            playTogether(animatorList)
+            start()
+        }
+
         Log.i(LIB_TAG, ">Playing Translate Up Animation")
     }
 
