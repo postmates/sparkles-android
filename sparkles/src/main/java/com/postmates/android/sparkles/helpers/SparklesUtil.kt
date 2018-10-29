@@ -9,21 +9,14 @@ import com.postmates.android.sparkles.model.SparklesDataPoint
  */
 object SparklesUtil {
 
-    fun getGraphPoint(dataPoint: SparklesDataPoint?): PointF? {
-        return dataPoint?.graphValue
-    }
+    fun getGraphPoint(dataPoint: SparklesDataPoint?) = dataPoint?.graphValue
 
-    fun getGraphPointX(graphPoint: PointF?): Float {
-        return graphPoint?.x ?: -1f
-    }
+    fun getGraphPointX(graphPoint: PointF?) = graphPoint?.x ?: -1f
 
-    fun getGraphPointY(graphPoint: PointF?): Float {
-        return graphPoint?.y ?: -1f
-    }
+    fun getGraphPointY(graphPoint: PointF?) = graphPoint?.y ?: -1f
 
-    fun calculatePercent(value: Float, maxValue: Float): Float {
-        return if (maxValue != 0f) {
-            value / maxValue * 100f
-        } else 0f
+    fun calculatePercent(value: Float, maxValue: Float) = when (maxValue == 0f) {
+        true -> 0f
+        else -> (value / maxValue) * 100f
     }
 }

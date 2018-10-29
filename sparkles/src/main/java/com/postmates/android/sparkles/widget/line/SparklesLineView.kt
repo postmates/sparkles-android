@@ -37,8 +37,8 @@ class SparklesLineView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = R.attr.pm_sparkles_DefaultSparkLinesView,
-        defStyleRes: Int = R.style.pm_sparkles_DefaultSparkLinesViewStyle) :
-        View(context, attrs, defStyleAttr, defStyleRes), SparklesAdapter.OnDataChangedListener {
+        defStyleRes: Int = R.style.pm_sparkles_DefaultSparkLinesViewStyle)
+    : View(context, attrs, defStyleAttr, defStyleRes), SparklesAdapter.OnDataChangedListener {
 
     // For drawing the lines & shapes on canvas
     private val contentRect = RectF()
@@ -47,6 +47,7 @@ class SparklesLineView @JvmOverloads constructor(
     private val baseLinePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+    // Path holders
     private var fillPathHolder: PathDataHolder? = null
     private var baseLinePathHolder: PathDataHolder? = null
     private val pathDataHolderList = ArrayList<PathDataHolder>()
@@ -201,7 +202,7 @@ class SparklesLineView @JvmOverloads constructor(
         }
 
         if (adapter!!.count < 2) {
-            Log.e(LIB_TAG, "Invalid or Insufficient adapter values")
+            Log.e(LIB_TAG, "Invalid or insufficient data points")
             resetData()
             return
         }
@@ -303,7 +304,7 @@ class SparklesLineView @JvmOverloads constructor(
 
     private fun performAnimations() {
 
-        if (!shouldAnimate() || pathDataHolderList == null || animationSet == null) {
+        if (!shouldAnimate() || animationSet == null || pathDataHolderList.isEmpty()) {
             Log.i(LIB_TAG, "Skipping animation due to invalid input")
             return
         }
@@ -319,12 +320,12 @@ class SparklesLineView @JvmOverloads constructor(
         when (animationType) {
             LINE_PATH -> playLinePathAnimations()
             TRANSLATE_UP -> playTranslateUpAnimations()
-            NONE -> Log.i(LIB_TAG, "Animation type undefined")
+            else -> Log.i(LIB_TAG, "Animation type undefined or unsupported")
         }
     }
 
     private fun playLinePathAnimations() {
-        Log.d(LIB_TAG, ">Building Line Path Animations")
+        Log.d(LIB_TAG, "Building Line Path Animations")
         val animationsList = ArrayList<Animator>()
 
         baseLinePathHolder?.let {
@@ -360,11 +361,11 @@ class SparklesLineView @JvmOverloads constructor(
             start()
         }
 
-        Log.i(LIB_TAG, ">Playing Line Path Animation")
+        Log.i(LIB_TAG, "Playing Line Path Animation")
     }
 
     private fun playTranslateUpAnimations() {
-        Log.d(LIB_TAG, ">Building Translate Up Animations")
+        Log.d(LIB_TAG, "Building Translate Up Animations")
 
         baseLinePathHolder?.let {
             AnimationHelper.getLinePathAnimator(this, it.path,
@@ -397,7 +398,7 @@ class SparklesLineView @JvmOverloads constructor(
             start()
         }
 
-        Log.i(LIB_TAG, ">Playing Translate Up Animation")
+        Log.i(LIB_TAG, "Playing Translate Up Animation")
     }
 
     private fun resetData() {
@@ -420,22 +421,16 @@ class SparklesLineView @JvmOverloads constructor(
         pathDataHolderList.clear()
     }
 
-    private fun resetHolderPath(holder: PathDataHolder?) {
-        holder?.path?.reset()
-    }
+    private fun resetHolderPath(holder: PathDataHolder?) = holder?.path?.reset()
 
-    private fun shouldAnimate(): Boolean {
-        return animationType != NONE
-    }
+    private fun shouldAnimate() = animationType != NONE
 
     /**
      * Gets the rect representing the 'content area' of the view. This is essentially the bounding
      * rect minus any padding.
      */
-    private fun calculateViewPort() {
-        contentRect.set(paddingStart.toFloat(), paddingTop.toFloat(),
-                (width.minus(paddingEnd)).toFloat(), graphBottom)
-    }
+    private fun calculateViewPort() = contentRect.set(paddingStart.toFloat(), paddingTop.toFloat(),
+            width.minus(paddingEnd).toFloat(), graphBottom)
 
     /**
      * This updates the original path with a partial path
@@ -462,7 +457,5 @@ class SparklesLineView @JvmOverloads constructor(
         }
     }
 
-    override fun onDataInvalidated() {
-        resetData()
-    }
+    override fun onDataInvalidated() = resetData()
 }

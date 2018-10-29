@@ -23,7 +23,5 @@ data class PathDataHolder constructor(val path: Path,
 
     constructor(path: Path, paint: Paint) : this(path, paint, null, null)
 
-    fun hasValidPointInfo(): Boolean {
-        return startPoint != null && endPoint != null
-    }
+    fun hasValidPointInfo() = startPoint != null && endPoint != null
 }

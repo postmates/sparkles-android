@@ -5,6 +5,9 @@ import android.graphics.RectF
 import android.util.Log
 import com.postmates.android.sparkles.helpers.Constants.LIB_TAG
 import com.postmates.android.sparkles.helpers.SparklesUtil
+import com.postmates.android.sparkles.helpers.SparklesUtil.getGraphPoint
+import com.postmates.android.sparkles.helpers.SparklesUtil.getGraphPointX
+import com.postmates.android.sparkles.helpers.SparklesUtil.getGraphPointY
 import com.postmates.android.sparkles.model.SparklesDataPoint
 
 /**
@@ -15,7 +18,7 @@ import com.postmates.android.sparkles.model.SparklesDataPoint
 class SparklesAdapter {
 
     // User Inputs
-    private var inputDataPoints: List<SparklesDataPoint>? = null
+    private var inputDataPoints = mutableListOf<SparklesDataPoint>()
     private var inputBaseline: SparklesDataPoint? = null
 
     // Graph Update Listener
@@ -23,16 +26,14 @@ class SparklesAdapter {
 
     val count: Int
         get() {
-            return inputDataPoints?.size ?: 0
+            return inputDataPoints.size
         }
 
     /**
      * @return the graph representation of the Y value of the desired baseLine.
      */
     val graphBaseline: Float
-        get() {
-            return SparklesUtil.getGraphPointY(SparklesUtil.getGraphPoint(inputBaseline))
-        }
+        get() = getGraphPointY(getGraphPoint(inputBaseline))
 
     /**
      * Gets the float representation of the boundaries of the entire dataset. By default, this will
@@ -72,15 +73,18 @@ class SparklesAdapter {
         }
 
     fun setInput(dataPoints: List<SparklesDataPoint>, baseline: SparklesDataPoint?) {
-        inputDataPoints = dataPoints
+        inputDataPoints.apply {
+            clear()
+            addAll(dataPoints)
+        }
         inputBaseline = baseline ?: SparklesDataPoint(null)
         processInput()
     }
 
     private fun processInput() {
         // Find the max value in the input
-        val maxValue = (0 until inputDataPoints!!.size)
-                .mapNotNull { inputDataPoints!![it].inputValue }
+        val maxValue = (0 until inputDataPoints.size)
+                .mapNotNull { inputDataPoints[it].inputValue }
                 .map { it.toFloat() }
                 .max() ?: -Float.MAX_VALUE
 
@@ -89,13 +93,12 @@ class SparklesAdapter {
         // Compute the input points relative to the max value to plot on graph
         var lastGoodValue = 0f
 
-        for (i in 0 until inputDataPoints!!.size) {
-            val point = inputDataPoints!![i]
+        for (i in 0 until inputDataPoints.size) {
+            val point = inputDataPoints[i]
             if (!point.isEmptyValue) {
                 lastGoodValue = SparklesUtil.calculatePercent(point.inputValue!!.toFloat(), maxValue)
             }
-            Log.d(LIB_TAG, "Point at $i : $lastGoodValue" +
-                    ", isMissing: ${point.isEmptyValue}")
+            Log.d(LIB_TAG, "Point at $i : $lastGoodValue, isMissing: ${point.isEmptyValue}")
             point.graphValue = PointF(i.toFloat(), lastGoodValue)
         }
 
@@ -110,41 +113,32 @@ class SparklesAdapter {
     }
 
     /**
-     * @return whether the value at a given index is null or empty.
+     * The listener to get notified about data changes
      */
-    fun isEmptyValue(index: Int): Boolean {
-        return inputDataPoints!![index].isEmptyValue
-    }
-
-    /**
-     * @return the float representation of the X value of the point at the given index.
-     */
-    fun getGraphX(index: Int): Float {
-        return SparklesUtil.getGraphPointX(SparklesUtil.getGraphPoint(inputDataPoints!![index]))
-    }
-
-    /**
-     * @return the float representation of the Y value of the point at the given index.
-     */
-    fun getGraphY(index: Int): Float {
-        return SparklesUtil.getGraphPointY(SparklesUtil.getGraphPoint(inputDataPoints!![index]))
-    }
-
-    fun hasBaseLine(): Boolean {
-        return graphBaseline >= 0
-    }
-
     fun setListener(listener: OnDataChangedListener) {
         onDataChangedListener = listener
     }
 
-    fun notifyDataSetChanged() {
-        onDataChangedListener?.onDataChanged()
-    }
+    /**
+     * @return whether the value at a given index is null or empty.
+     */
+    fun isEmptyValue(index: Int) = inputDataPoints[index].isEmptyValue
 
-    fun notifyDataSetInvalidated() {
-        onDataChangedListener?.onDataInvalidated()
-    }
+    /**
+     * @return the float representation of the X value of the point at the given index.
+     */
+    fun getGraphX(index: Int) = getGraphPointX(getGraphPoint(inputDataPoints[index]))
+
+    /**
+     * @return the float representation of the Y value of the point at the given index.
+     */
+    fun getGraphY(index: Int) = getGraphPointY(getGraphPoint(inputDataPoints[index]))
+
+    fun hasBaseLine() = graphBaseline >= 0
+
+    fun notifyDataSetChanged() = onDataChangedListener?.onDataChanged()
+
+    fun notifyDataSetInvalidated() = onDataChangedListener?.onDataInvalidated()
 
     interface OnDataChangedListener {
         fun onDataChanged()

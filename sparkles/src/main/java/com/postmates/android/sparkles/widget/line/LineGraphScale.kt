@@ -5,7 +5,7 @@ import android.support.annotation.Dimension
 import com.postmates.android.sparkles.widget.SparklesAdapter
 
 /**
- * Helps scale the graph coordinates to fit in the view.
+ * Helper for providing the corresponding scale points based on the view dimensions.
  */
 class LineGraphScale(adapter: SparklesAdapter,
                      contentRect: RectF,
@@ -26,7 +26,7 @@ class LineGraphScale(adapter: SparklesAdapter,
 
     init {
         // Make sure the line width is accommodated in the view
-        val lineWidthOffset: Float = if (shouldFill) 0f else lineWidth
+        val lineWidthOffset = if (shouldFill) 0f else lineWidth
         val bounds = adapter.dataBounds
 
         width = contentRect.width().minus(lineWidthOffset)
@@ -47,21 +47,15 @@ class LineGraphScale(adapter: SparklesAdapter,
     /**
      * Scaled 'x' value per view dimensions and raw position
      */
-    fun getX(rawX: Float): Float {
-        return rawX.times(xScale).plus(xTranslation)
-    }
+    fun getX(rawX: Float) = rawX.times(xScale).plus(xTranslation)
 
     /**
      * Scaled 'y' value per view dimensions and raw position
      */
-    fun getY(rawY: Float): Float {
-        return height.plus(yTranslation).minus(rawY.times(yScale))
-    }
+    fun getY(rawY: Float) = height.plus(yTranslation).minus(rawY.times(yScale))
 
     /**
      * Scaled Bottom coordinate for the graph
      */
-    fun getBottom(): Float {
-        return height.plus(yTranslation)
-    }
+    fun getBottom() = height.plus(yTranslation)
 }
