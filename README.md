@@ -1,19 +1,12 @@
+
+[![](https://jitpack.io/v/postmates/sparkles-android.svg)](https://jitpack.io/#postmates/sparkles-android)
+
 # Sparkles
 
 A custom Graphing library which can leverage missing data points with dotted lines!
 
 ## Adding Dependencies
 
-For now, clone the module and add it as a dependency manually in your app's `build.gradle` file:
-```gradle
-dependencies {
-	...
-	implementation project(':sparkles')
-	...
-}
-```
-
-(*TODO* START - This can change based on where we host the artifact)
 
 Add this in your root `build.gradle` file (and **not** your module `build.gradle` file):
 
@@ -27,17 +20,15 @@ allprojects {
 }
 ```
 
-Add this to your module's `build.gradle` file (make sure the version matches the JitPack badge above):
+Add this to your app module's `build.gradle` file (make sure the version matches the JitPack badge above):
 
 ```gradle
 dependencies {
 	...
-	compile 'com.postmates.android.sparkles:Sparkles:1.0.0'
+	implementation 'com.github.postmates:sparkles-android:1.0.0'
 	...
 }
 ```
-
-(*TODO* END)
 
 
 ## Usage
