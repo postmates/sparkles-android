@@ -4,7 +4,7 @@ android {
     compileSdkVersion rootProject.compileSdk
 
     defaultConfig {
-        applicationId appId
+        applicationId "${appId}.java"
         minSdkVersion rootProject.minSdk
         targetSdkVersion rootProject.targetSdk
         versionCode "${appVersionCode}" as int
@@ -14,7 +14,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -28,18 +27,8 @@ dependencies {
     // Important: Library dependency
     implementation project(':sparkles')
 
-    implementation "com.android.support:appcompat-v7:$supportLibsVersion"
-    implementation "com.android.support:design:$supportLibsVersion"
-    implementation "com.android.support:support-annotations:$supportLibsVersion"
-    implementation "com.android.support.constraint:constraint-layout:2.0.0-alpha1"
-}
-
-configurations.all {
-    resolutionStrategy {
-        //Make sure that our version is given priority in case of conflicts with libs
-        force "com.android.support:appcompat-v7:$supportLibsVersion"
-        force "com.android.support:design:$supportLibsVersion"
-        force "com.android.support:support-annotations:$supportLibsVersion"
-        force "com.android.support:support-v4:$supportLibsVersion"
-    }
+    implementation "androidx.appcompat:appcompat:$androidXVersion"
+    implementation "com.google.android.material:material:$androidXVersion"
+    implementation "androidx.annotation:annotation:$androidXVersion"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha2"
 }

@@ -11,12 +11,12 @@ import android.graphics.Path
 import android.graphics.PathEffect
 import android.graphics.PointF
 import android.graphics.RectF
-import android.support.annotation.ColorInt
-import android.support.annotation.Dimension
-import android.support.annotation.IntegerRes
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import androidx.annotation.ColorInt
+import androidx.annotation.Dimension
+import androidx.annotation.IntegerRes
 import com.postmates.android.sparkles.R
 import com.postmates.android.sparkles.helpers.AnimationHelper
 import com.postmates.android.sparkles.helpers.Constants

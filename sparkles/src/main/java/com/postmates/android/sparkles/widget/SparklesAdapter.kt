@@ -72,6 +72,10 @@ class SparklesAdapter {
                     maxX, maxY.plus(VERTICAL_BOUND_OFFSET))
         }
 
+    /**
+     * Updates the graph with the new data points and
+     * performs the animations if the value is set to true.
+     */
     fun setInput(dataPoints: List<SparklesDataPoint>, baseline: SparklesDataPoint?) {
         inputDataPoints.apply {
             clear()

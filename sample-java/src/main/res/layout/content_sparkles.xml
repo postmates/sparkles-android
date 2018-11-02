@@ -11,7 +11,7 @@
     tools:context="com.postmates.android.sparkles.app.SparklesActivity"
     tools:showIn="@layout/app_bar_sparkles">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_dark"
@@ -64,5 +64,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/linePathGraph" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

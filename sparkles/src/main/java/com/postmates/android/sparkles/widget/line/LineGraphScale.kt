@@ -1,7 +1,7 @@
 package com.postmates.android.sparkles.widget.line
 
 import android.graphics.RectF
-import android.support.annotation.Dimension
+import androidx.annotation.Dimension
 import com.postmates.android.sparkles.widget.SparklesAdapter
 
 /**

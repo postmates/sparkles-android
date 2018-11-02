@@ -1,11 +1,11 @@
 package com.postmates.android.sparkles.app
 
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.DimenRes
-import android.support.annotation.IntegerRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.IntegerRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.postmates.android.sparkles.model.SparklesDataPoint
 import com.postmates.android.sparkles.widget.SparklesAdapter
 import kotlinx.android.synthetic.main.app_bar_sparkles.*
@@ -64,21 +64,17 @@ class SparklesActivity : AppCompatActivity() {
         linePathGraphAdapter.setInput(randomDataPoints(), randomDataPoint())
     }
 
-    private fun randomDataPoint(): SparklesDataPoint {
-        return SparklesDataPoint(getRandomInRange())
-    }
-
-    private fun randomDataPoints(): MutableList<SparklesDataPoint> {
-        val dataPointsList: MutableList<SparklesDataPoint> = mutableListOf()
-        for (i in 1..20) {
-            dataPointsList.add(randomDataPoint())
+    private fun randomDataPoints() = mutableListOf<SparklesDataPoint>().apply {
+        for (i in 1..50) {
+            add(randomDataPoint())
         }
-        return dataPointsList
     }
 
-    private fun getRandomInRange(): BigDecimal? {
-        return if (ThreadLocalRandom.current().nextBoolean()) null else {
-            val random = ThreadLocalRandom.current().nextInt(1, 100)
+    private fun randomDataPoint() = SparklesDataPoint(getRandomInRange())
+
+    private fun getRandomInRange(): BigDecimal? = when (ThreadLocalRandom.current().nextBoolean()) {
+        true -> null
+        else -> ThreadLocalRandom.current().nextInt(1, 100).let { random ->
             BigDecimal.valueOf(random.toDouble())
         }
     }

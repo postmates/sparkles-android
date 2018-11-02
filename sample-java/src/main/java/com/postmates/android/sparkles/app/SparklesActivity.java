@@ -1,13 +1,8 @@
 package com.postmates.android.sparkles.app;
 
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.IntegerRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.postmates.android.sparkles.model.SparklesDataPoint;
 import com.postmates.android.sparkles.widget.SparklesAdapter;
 import com.postmates.android.sparkles.widget.line.SparklesLineView;
@@ -16,6 +11,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.IntegerRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 /**
  * Sample Activity to show usage of Sparkles Line Graph.
@@ -85,7 +86,7 @@ public class SparklesActivity extends AppCompatActivity {
 
     private List<SparklesDataPoint> randomDataPoints() {
         List<SparklesDataPoint> dataPointsList = new ArrayList<>();
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 50; i++) {
             dataPointsList.add(randomDataPoint());
         }
         return dataPointsList;
