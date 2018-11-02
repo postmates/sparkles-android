@@ -1,5 +1,8 @@
 
-[![](https://jitpack.io/v/postmates/sparkles-android.svg)](https://jitpack.io/#postmates/sparkles-android)
+[![built with ♥](https://forthebadge.com/images/badges/built-with-love.svg)](https://postmates.com)
+
+[![](https://jitpack.io/v/postmates/sparkles-android.svg)](https://jitpack.io/#postmates/sparkles-android) 
+
 
 # Sparkles
 
@@ -25,7 +28,7 @@ Add this to your app module's `build.gradle` file (make sure the version matches
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.postmates:sparkles-android:1.0.0'
+	implementation "com.github.postmates:sparkles-android:${sparklesVersion}"
 	...
 }
 ```
@@ -57,18 +60,18 @@ dependencies {
 Kotlin: 
 
 ```kotlin
-        sparklesAdapter: SparklesAdapter = SparklesAdapter()
+        sparklesAdapter = SparklesAdapter()
         sparklesAdapter.setInput(..)
-        sparklesLineGraph.adapter = sparklesAdapter
+        sparklesGraphView.adapter = sparklesAdapter
 ```
 
 Java: 
 
 ```java
-        sparklesLineGraph = findViewById(R.id.sparkles_line_graph);
+        sparklesGraphView = findViewById(R.id.sparkles_line_graph);
         SparklesAdapter adapter = new SparklesAdapter();
         adapter.setInput(..);
-        sparklesLineGraph.setAdapter(adapter);
+        sparklesGraphView.setAdapter(adapter);
 ```
 
 ### 3. Adapter Input: 
@@ -97,13 +100,15 @@ To update your graph style:
 Kotlin: 
 
 ``` kotlin
-        sparklesGraphView.lineColor = ContextCompat.getColor(this, R.color.primary)
-        sparklesGraphView.lineWidth = resources.getDimension(R.dimen.graph_line_width)
-        sparklesGraphView.baseLineColor = ContextCompat.getColor(this, R.color.accent)
-        sparklesGraphView.baseLineWidth = resources.getDimension(R.dimen.graph_base_line_width)
-        sparklesGraphView.animationType = AnimationType.TRANSLATE_UP | AnimationType.LINE_PATH
-        sparklesGraphView.fillOpacityPercent = resources.getInteger(R.integer.fill_percent)
-        sparklesGraphView.shouldFill = true | false
+        sparklesGraphView.apply {
+            lineColor = ContextCompat.getColor(context, R.color.primary)
+            lineWidth = resources.getDimension(R.dimen.graph_line_width)
+            baseLineColor = ContextCompat.getColor(context, R.color.accent)
+            baseLineWidth = resources.getDimension(R.dimen.graph_base_line_width)
+            animationType = AnimationType.TRANSLATE_UP | AnimationType.LINE_PATH
+            fillOpacityPercent = resources.getInteger(R.integer.fill_percent)
+            shouldFill = true | false
+        }
 ```
 
 Java: 
