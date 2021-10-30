@@ -1,3 +1,6 @@
+# Now Archived and Forked
+_sparkles-android_ will not be maintained in this repository going forward. Please use, create issues on, and make PRs to the fork of _sparkles-android_ located [here](https://github.com/preraktrivedi/sparkles-android).
+
 
 [![built with ♥](https://forthebadge.com/images/badges/built-with-love.svg)](https://postmates.com)
 
